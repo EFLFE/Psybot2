@@ -166,12 +166,12 @@ namespace Psybot2.Src
 
         private Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
         {
-            return Task.CompletedTask;
+            return moduleManager.ClientMessageReactionEventAsync(true, arg1, arg2, arg3);
         }
 
         private Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
         {
-            return Task.CompletedTask;
+            return moduleManager.ClientMessageReactionEventAsync(false, arg1, arg2, arg3);
         }
 
         public static void CustomLog(string message, CustomLogEnum source = CustomLogEnum.Psybot, Exception ex = null)
@@ -254,6 +254,16 @@ namespace Psybot2.Src
                     Program.PauseOnExit = true;
                 }
             }
+        }
+
+        public async void SendMessageToLogChannel(string text)
+        {
+            await client.GetGuild(82151967899516928UL).GetTextChannel(Config.LogChannelID).SendMessageAsync(text);
+        }
+
+        public async void SendMessage(ulong guildId, ulong channelId, string text, Embed embed = null)
+        {
+            await client.GetGuild(guildId).GetTextChannel(channelId).SendMessageAsync(text, embed: embed);
         }
 
     }

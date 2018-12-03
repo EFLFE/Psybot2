@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 
 namespace Psybot2.Src
@@ -8,6 +9,11 @@ namespace Psybot2.Src
     internal static class Ext
     {
         public static Random Rnd = new Random();
+
+        public static IGuildChannel AsGuildChannel(this ISocketMessageChannel socketMessageChannel)
+        {
+            return (IGuildChannel)socketMessageChannel;
+        }
 
         /// <summary> Удалить сообщение через определённое время. </summary>
         public static async void DelayDeleteMessage(SocketMessage mess)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Discord;
 using Discord.WebSocket;
 
@@ -41,7 +42,13 @@ namespace Psybot2.Src.Modules
 
         protected void Log(string text, Exception exc = null)
         {
-            PsyClient.CustomLog(ModName + " -> " + text, CustomLogEnum.Module, exc);
+            PsyClient.CustomLog($"[{ModName}] {text}", CustomLogEnum.Module, exc);
+        }
+
+        //[Conditional("DEBUG")]
+        protected void LogDebug(string text, Exception exc = null)
+        {
+            Log(text, exc);
         }
 
         public void Init(IPsyClient psy)

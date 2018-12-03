@@ -138,6 +138,9 @@ namespace Psybot2.Src
 
         private void Start()
         {
+            if (IsConnected)
+                return;
+
             if (moduleManager == null)
             {
                 CustomLog("Init ModuleManager", CustomLogEnum.Psybot, null);
@@ -160,8 +163,16 @@ namespace Psybot2.Src
                 client.ReactionAdded += Client_ReactionAdded;
                 client.ReactionRemoved += Client_ReactionRemoved;
             }
-            client.LoginAsync(TokenType.Bot, Config.GetToken(), true).Wait();
-            client.StartAsync().Wait();
+            try
+            {
+                client.LoginAsync(TokenType.Bot, Config.GetToken(), true).Wait();
+                client.StartAsync().Wait();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                exit = true;
+            }
         }
 
         private Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)

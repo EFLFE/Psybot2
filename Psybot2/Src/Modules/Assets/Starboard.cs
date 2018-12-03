@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Discord;
 using Discord.WebSocket;
+using Psybot2.Src.EF;
 
 namespace Psybot2.Src.Modules.Assets
 {
@@ -12,37 +14,123 @@ namespace Psybot2.Src.Modules.Assets
 #if DEBUG
         private const int GOAL = 1;
 #else
-        private const int GOAL = 3;
+        private const int GOAL = 4;
 #endif
+
+        private const string STARED_MESSAGES = "sb1.bin";
+        private const string STARBOARD_CHANNELS = "sb2.bin";
 
         // guild Id -> channel 'starboard' id
         private Dictionary<ulong, ulong> guildChannelId = new Dictionary<ulong, ulong>();
+
         private List<ulong> addedMessages = new List<ulong>();
+
+        private QueueArray<ulong> addedMessageBuffer = new QueueArray<ulong>(8);
+
+        private BinaryStream staredMessageStream;
+        private BinaryStream starboardChannelsStream;
 
         public Starboard() : base(nameof(Starboard), "sb")
         {
             AdminOnly = true;
             Reaction = true;
+
+            staredMessageStream = new BinaryStream(STARED_MESSAGES, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            starboardChannelsStream = new BinaryStream(STARBOARD_CHANNELS, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+
+            LogDebug("read " + STARBOARD_CHANNELS);
+            if (starboardChannelsStream.FStream.Length != 0)
+            {
+                int sbCount = starboardChannelsStream.Reader.ReadInt32();
+
+                for (int i = 0; i < sbCount; i++)
+                {
+                    var guildId = starboardChannelsStream.Reader.ReadUInt64();
+                    var channelId = starboardChannelsStream.Reader.ReadUInt64();
+                    guildChannelId.Add(guildId, channelId);
+                }
+            }
         }
 
-        public override void OnEnable()
+        private void AddStarMessage(ulong id)
         {
-            LoadData();
-            base.OnEnable();
+            LogDebug("AddStarMessage");
+            // +1
+            if (staredMessageStream.FStream.Length == 0)
+            {
+                staredMessageStream.Writer.Write(1);
+            }
+            else
+            {
+                staredMessageStream.FStream.Seek(0L, 0);
+                int count = staredMessageStream.Reader.ReadInt32();
+                staredMessageStream.FStream.Seek(0L, 0);
+                staredMessageStream.Writer.Write(count + 1);
+            }
+
+            // +id
+            staredMessageStream.FStream.Seek(0L, SeekOrigin.End);
+            staredMessageStream.Writer.Write(id);
+            staredMessageStream.FStream.Flush(true);
         }
 
-        public override void OnDisable()
+        private bool ContainsStarMessage(ulong id)
         {
-            base.OnDisable();
-            SaveData();
+            LogDebug("stream ContainsStarMessage..");
+
+            if (staredMessageStream.FStream.Length == 0)
+                return false;
+
+            staredMessageStream.FStream.Seek(0L, 0);
+            int count = staredMessageStream.Reader.ReadInt32();
+
+            for (int i = 0; i < count; i++)
+            {
+                ulong id2 = staredMessageStream.Reader.ReadUInt64();
+                if (id == id2)
+                {
+                    LogDebug("found");
+                    return true;
+                }
+            }
+
+            LogDebug("not found");
+            return false;
         }
 
-        private void SaveData()
+        private void AddGuildChannelSb(ulong guildId, ulong channelId)
         {
+            LogDebug("AddGuildChannelSb");
+            // +1
+            if (starboardChannelsStream.FStream.Length == 0)
+            {
+                starboardChannelsStream.Writer.Write(1);
+            }
+            else
+            {
+                starboardChannelsStream.FStream.Seek(0L, 0);
+                int count = starboardChannelsStream.Reader.ReadInt32();
+                starboardChannelsStream.FStream.Seek(0L, 0);
+                starboardChannelsStream.Writer.Write(count + 1);
+            }
+
+            // +id
+            starboardChannelsStream.FStream.Seek(0L, SeekOrigin.End);
+            starboardChannelsStream.Writer.Write(guildId);
+            starboardChannelsStream.Writer.Write(channelId);
+            starboardChannelsStream.FStream.Flush(true);
         }
 
-        private void LoadData()
+        private void RewriteGuildChannelSb()
         {
+            starboardChannelsStream.FStream.Seek(0L, 0);
+            starboardChannelsStream.Writer.Write(guildChannelId.Count);
+
+            foreach (KeyValuePair<ulong, ulong> item in guildChannelId)
+            {
+                starboardChannelsStream.Writer.Write(item.Key);
+                starboardChannelsStream.Writer.Write(item.Value);
+            }
         }
 
         public override async void OnGetMessage(bool triggered, SocketMessage mess, string[] args)
@@ -64,7 +152,9 @@ namespace Psybot2.Src.Modules.Assets
                     if (guildChannelId.ContainsKey(guildId))
                     {
                         // replace
-                        guildChannelId[guildId] = sbChanneldId;
+                        //guildChannelId[guildId] = sbChanneldId;
+                        await mess.Channel.SendMessageAsync("Starboard already added.");
+                        return;
                     }
                     else
                     {
@@ -74,7 +164,7 @@ namespace Psybot2.Src.Modules.Assets
 
                     try
                     {
-                        SaveData();
+                        AddGuildChannelSb(guildId, sbChanneldId);
                         await mess.Channel.TriggerTypingAsync();
                         await mess.DeleteAsync();
                         await mess.Channel.SendMessageAsync("Starboard added :ok_hand:");
@@ -83,12 +173,14 @@ namespace Psybot2.Src.Modules.Assets
                     {
                         guildChannelId.Remove(guildId);
                         await mess.Channel.SendMessageAsync("Error: " + ex.Message);
-                        Log("[sb] Error on save data.", ex);
+                        Log("Error on save data.", ex);
+                        return;
                     }
                 }
                 else
                 {
                     await mess.Channel.SendMessageAsync("Channel not found.");
+                    return;
                 }
             }
             else if (args[0] == "remove")
@@ -100,7 +192,7 @@ namespace Psybot2.Src.Modules.Assets
 
                     try
                     {
-                        SaveData();
+                        RewriteGuildChannelSb();
                     }
                     finally
                     {
@@ -115,7 +207,7 @@ namespace Psybot2.Src.Modules.Assets
             }
         }
 
-        public override async void OnReactionAdded(
+        public override void OnReactionAdded(
             Cacheable<IUserMessage, ulong> cachedMessage,
             ISocketMessageChannel mesChannel,
             SocketReaction reaction)
@@ -131,13 +223,21 @@ namespace Psybot2.Src.Modules.Assets
                 IUserMessage message = cachedMessage.GetOrDownloadAsync().GetAwaiter().GetResult();
 
                 // защита от рекурсии
-                if (message.Channel.Id == sbChannelId)
-                    return;
+               // if (message.Channel.Id == sbChannelId)
+               // {
+               //     LogDebug("рек");
+               //     return;
+               // }
+
+                var messageId = message.Id;
 
                 // сообщение ещё не было добавлено в сб ии имеет достаточно звёзд
-                if (!addedMessages.Contains(message.Id) && message.Reactions[reaction.Emote].ReactionCount >= GOAL)
+                if (!addedMessageBuffer.Contains(messageId) &&
+                    !ContainsStarMessage(messageId) &&
+                    message.Reactions[reaction.Emote].ReactionCount >= GOAL)
                 {
-                    addedMessages.Add(message.Id);
+                    addedMessageBuffer.Insert(messageId);
+                    AddStarMessage(messageId);
 
                     try
                     {
@@ -160,7 +260,7 @@ namespace Psybot2.Src.Modules.Assets
                         psybot.SendMessage(
                             guild.GuildId,
                             sbChannelId,
-                            (message.Channel as ITextChannel).Mention + " ID: " + message.Id.ToString(),
+                            (message.Channel as ITextChannel).Mention + " ID: " + messageId.ToString(),
                             embed);
                     }
                     catch (Exception ex)

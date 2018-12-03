@@ -141,6 +141,8 @@
     <Compile Include="Src\Config.cs" />
     <Compile Include="Src\CustomLogEnum.cs" />
     <Compile Include="Src\DeletedMessageMonitor.cs" />
+    <Compile Include="Src\EF\BinaryStream.cs" />
+    <Compile Include="Src\EF\QueueArray.cs" />
     <Compile Include="Src\IPsyClient.cs" />
     <Compile Include="Src\Modules\Assets\Choice.cs" />
     <Compile Include="Src\Modules\Assets\Macros.cs" />

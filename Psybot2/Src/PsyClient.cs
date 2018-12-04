@@ -182,7 +182,13 @@ namespace Psybot2.Src
             {
                 CustomLog("Init ModuleManager", CustomLogEnum.Psybot, null);
                 moduleManager = new ModuleManager(this);
-                moduleManager.EnableAll();
+                if (!moduleManager.EnableAll())
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Re-enter 'start' for continue");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    return;
+                }
             }
             if (client == null)
             {

@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using Discord.WebSocket;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using Discord.WebSocket;
 
 namespace Psybot2.Src.Modules
 {
@@ -47,7 +47,7 @@ namespace Psybot2.Src.Modules
 
             for (int i = 0; i < count; i++)
             {
-                PsyClient.CustomLog("> " + assetList[i].Name);
+                PsyClient.CustomLog("- " + assetList[i].Name);
 
                 try
                 {
@@ -69,6 +69,15 @@ namespace Psybot2.Src.Modules
                 catch (Exception exc)
                 {
                     PsyClient.CustomLog("Error", ex: exc);
+                }
+            }
+
+            // re-check
+            for (int i = 0; i < count; i++)
+            {
+                if (!mods[i].IsEnable)
+                {
+                    PsyClient.CustomLog("! Mod '" + mods[i].ModName + "' disabled.");
                 }
             }
 
@@ -172,8 +181,10 @@ namespace Psybot2.Src.Modules
             });
         }
 
-        public void EnableAll()
+        public bool EnableAll()
         {
+            bool err = false;
+
             for (int i = 0; i < mods.Length; i++)
             {
                 try
@@ -182,13 +193,18 @@ namespace Psybot2.Src.Modules
                 }
                 catch (Exception exc)
                 {
+                    err = true;
                     PsyClient.CustomLog($"Enable mod '{mods[i].ModName}' error: ", ex: exc);
                 }
             }
+
+            return err;
         }
 
-        public void DisableAll()
+        public bool DisableAll()
         {
+            bool err = false;
+
             for (int i = 0; i < mods.Length; i++)
             {
                 try
@@ -197,9 +213,12 @@ namespace Psybot2.Src.Modules
                 }
                 catch (Exception exc)
                 {
+                    err = true;
                     PsyClient.CustomLog($"Disable mod '{mods[i].ModName}' error: ", ex: exc);
                 }
             }
+
+            return err;
         }
 
     }

@@ -17,8 +17,15 @@ namespace Psybot2.Src.Modules.Assets
 
         public override void OnEnable()
         {
-            Reload();
-            base.OnEnable();
+            if (Directory.Exists(PATH))
+            {
+                Reload();
+                base.OnEnable();
+            }
+            else
+            {
+                Log("Dir '" + PATH + "' not found.");
+            }
         }
 
         private void Reload()

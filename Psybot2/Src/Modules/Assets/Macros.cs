@@ -29,8 +29,9 @@ namespace Psybot2.Src.Modules.Assets
         public Macros() : base(nameof(Macros), "macros")
         {
             ReceiveAllMessages = true;
-
+#if !DEBUG
             Hidden = true;
+#endif
         }
 
         public override void OnEnable()

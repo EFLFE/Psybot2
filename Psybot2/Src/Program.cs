@@ -36,37 +36,23 @@ namespace Psybot2.Src
 
             if (args != null && args.Length > 0)
             {
-                if (args[0] == COM_PUBLISH)
-                {
-                    try
-                    {
-                        // создание новой сборки и её запуск
-                        Publish(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                        Console.ReadLine();
-                    }
-                    return;
-                }
-                else if (args[0] == COM_PUBLISH_AND_RESUME)
-                {
-                    try
-                    {
-                        // создание новой сборки и её запуск
-                        Publish(true);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                        Console.ReadLine();
-                    }
-                    return;
-                }
-                else if (args[0] == COM_RESUME)
+                if (args[0] == COM_RESUME)
                 {
                     resume = true;
+                }
+                else if (args[0] == COM_PUBLISH || args[0] == COM_PUBLISH_AND_RESUME)
+                {
+                    try
+                    {
+                        // создание новой сборки и её запуск
+                        Publish(args[0] == COM_PUBLISH_AND_RESUME);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        Console.ReadLine();
+                    }
+                    return;
                 }
             }
 

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Psybot2.Src.EF
 {
-    internal class BinaryStream
+    internal class BinaryStream : IDisposable
     {
         public readonly FileStream FStream;
         public readonly BinaryReader Reader;
@@ -16,10 +16,15 @@ namespace Psybot2.Src.EF
             Writer = new BinaryWriter(FStream);
         }
 
+        public void Dispose()
+        {
+            Unload();
+        }
+
         public void Unload()
         {
-            FStream.Close();
-            FStream.Dispose();
+            FStream?.Close();
+            FStream?.Dispose();
         }
 
     }

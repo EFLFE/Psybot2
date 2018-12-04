@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 
-namespace Psybot2.Src
+namespace Psybot2.Src.GeneralModules
 {
     internal sealed class DeletedMessageMonitor
     {

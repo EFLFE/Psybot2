@@ -38,7 +38,7 @@ namespace Psybot2.Src.Modules.Assets
             staredMessageStream = new BinaryStream(STARED_MESSAGES, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             starboardChannelsStream = new BinaryStream(STARBOARD_CHANNELS, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
 
-            LogDebug("read " + STARBOARD_CHANNELS);
+            Log("read " + STARBOARD_CHANNELS);
             if (starboardChannelsStream.FStream.Length != 0)
             {
                 int sbCount = starboardChannelsStream.Reader.ReadInt32();
@@ -54,7 +54,7 @@ namespace Psybot2.Src.Modules.Assets
 
         private void AddStarMessage(ulong id)
         {
-            LogDebug("AddStarMessage");
+            Log("AddStarMessage");
             // +1
             if (staredMessageStream.FStream.Length == 0)
             {
@@ -76,7 +76,7 @@ namespace Psybot2.Src.Modules.Assets
 
         private bool ContainsStarMessage(ulong id)
         {
-            LogDebug("stream ContainsStarMessage..");
+            Log("stream ContainsStarMessage..");
 
             if (staredMessageStream.FStream.Length == 0)
                 return false;
@@ -89,18 +89,18 @@ namespace Psybot2.Src.Modules.Assets
                 ulong id2 = staredMessageStream.Reader.ReadUInt64();
                 if (id == id2)
                 {
-                    LogDebug("found");
+                    Log("found");
                     return true;
                 }
             }
 
-            LogDebug("not found");
+            Log("not found");
             return false;
         }
 
         private void AddGuildChannelSb(ulong guildId, ulong channelId)
         {
-            LogDebug("AddGuildChannelSb");
+            Log("AddGuildChannelSb");
             // +1
             if (starboardChannelsStream.FStream.Length == 0)
             {
@@ -225,7 +225,7 @@ namespace Psybot2.Src.Modules.Assets
                 // защита от рекурсии
                // if (message.Channel.Id == sbChannelId)
                // {
-               //     LogDebug("рек");
+               //     Log("рек");
                //     return;
                // }
 
@@ -260,7 +260,8 @@ namespace Psybot2.Src.Modules.Assets
                         psybot.SendMessage(
                             guild.GuildId,
                             sbChannelId,
-                            (message.Channel as ITextChannel).Mention + " ID: " + messageId.ToString(),
+                            //(message.Channel as ITextChannel).Mention + " ID: " + messageId.ToString(),
+                            (message.Channel as ITextChannel).Mention,
                             embed);
                     }
                     catch (Exception ex)

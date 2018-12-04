@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Net.Providers.WS4Net;
 using Discord.WebSocket;
+using Psybot2.Src.GeneralModules;
 using Psybot2.Src.Modules;
 
 namespace Psybot2.Src
 {
-    internal  sealed  class PsyClient : IPsyClient
+    internal sealed class PsyClient : IPsyClient
     {
         public const string PREFIX = "psy";
 
@@ -33,6 +34,8 @@ namespace Psybot2.Src
 
         private DeletedMessageMonitor dmm;
 
+        private BlackList blackList;
+
         public bool IsConnected
         {
             get
@@ -45,39 +48,62 @@ namespace Psybot2.Src
         {
             sbLog = new StringBuilder();
             dmm = new DeletedMessageMonitor();
+            blackList = new BlackList();
+
             commands = new TermCommands[]
             {
-                new TermCommands("help", "Show commands.", new Action(Help), null),
-                new TermCommands("exit", "Exit.", new Action(Exit), null),
-                new TermCommands("start", "Login and connect.", new Action(Start), null),
-                new TermCommands("update", "Update app.", new Action(Update), null),
-                new TermCommands("publish", "Publish app.", new Action(Publish), null),
-                new TermCommands("safemode", "Publish app.", delegate()
+                new TermCommands("help", "Show commands.", Help),
+                new TermCommands("exit", "Exit.", Exit),
+                new TermCommands("start", "Login and connect.", Start),
+                new TermCommands("update", "Update app.", Update),
+                new TermCommands("publish", "Publish app.", Publish),
+                new TermCommands("safemode", "On/off safe mode (only admin commands).", (_) =>
                 {
                     safeMode = !safeMode;
-                }, null)
+                    CustomLog("Safe mode is " + (safeMode ? "on" : "off"));
+                }, null),
+                new TermCommands("bl", "Black list.", (args) =>
+                {
+                    if (args.Length == 3 && ulong.TryParse(args[2], out ulong id))
+                    {
+                        if (args[1] == "add")
+                        {
+                            blackList.Add(id);
+                            CustomLog("Black id added");
+                        }
+                        else if(args[1] == "remove")
+                        {
+                            blackList.Remove(id);
+                            CustomLog("Black id removed");
+                        }
+                        else
+                        {
+                            CustomLog("Unknown command");
+                        }
+                    }
+                }),
             };
         }
 
-        public void Publish()
+        public void Publish(string[] args)
         {
             outCom = OutComEnun.Publish;
             exit = true;
         }
 
-        public void Update()
+        public void Update(string[] args)
         {
             outCom = OutComEnun.Update;
             exit = true;
         }
 
-        private void Exit()
+        private void Exit(string[] args)
         {
             CustomLog("Exit command!", CustomLogEnum.Psybot, null);
             exit = true;
         }
 
-        private void Help()
+        private void Help(string[] args)
         {
             Console.WriteLine();
             for (int i = 0; i < commands.Length; i++)
@@ -91,8 +117,14 @@ namespace Psybot2.Src
         {
             if (resume)
             {
-                Start();
+                Start(null);
             }
+            else
+            {
+                Help(null);
+            }
+
+            // чтение ввод данных на фоновый поток
             ThreadPool.QueueUserWorkItem(delegate (object _)
             {
                 for (; ; )
@@ -100,12 +132,17 @@ namespace Psybot2.Src
                     ExcecuteCommand(Console.ReadLine());
                 }
             });
+
             while (!exit)
             {
                 Thread.Sleep(200);
             }
+
+            // unload
+            blackList.SaveData();
             wasConnected = IsConnected;
             ModuleManager moduleManager = this.moduleManager;
+
             if (moduleManager != null)
             {
                 moduleManager.DisableAll();
@@ -125,7 +162,7 @@ namespace Psybot2.Src
             {
                 for (int i = 0; i != commands.Length; i++)
                 {
-                    if (commands[i].Excecute(ref cmd[0]))
+                    if (commands[i].Excecute(cmd))
                     {
                         return true;
                     }
@@ -136,7 +173,7 @@ namespace Psybot2.Src
             return false;
         }
 
-        private void Start()
+        private void Start(string[] arg)
         {
             if (IsConnected)
                 return;
@@ -215,6 +252,10 @@ namespace Psybot2.Src
             if (mess.Source == MessageSource.User)
             {
                 dmm.NewMessage(mess);
+
+                if (blackList.Contains(mess.Author.Id))
+                    return;
+
                 if (!safeMode || mess.Author.Id == Config.AdminID)
                 {
                     if (mess.Content == "psy ping")

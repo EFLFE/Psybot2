@@ -140,15 +140,16 @@
   <ItemGroup>
     <Compile Include="Src\Config.cs" />
     <Compile Include="Src\CustomLogEnum.cs" />
-    <Compile Include="Src\DeletedMessageMonitor.cs" />
+    <Compile Include="Src\GeneralModules\BlackList.cs" />
+    <Compile Include="Src\GeneralModules\DeletedMessageMonitor.cs" />
     <Compile Include="Src\EF\BinaryStream.cs" />
     <Compile Include="Src\EF\QueueArray.cs" />
     <Compile Include="Src\IPsyClient.cs" />
     <Compile Include="Src\Modules\Assets\Choice.cs" />
     <Compile Include="Src\Modules\Assets\Macros.cs" />
     <Compile Include="Src\Modules\Assets\Meme.cs" />
-    <Compile Include="Src\Modules\Assets\NuCounter.cs" />
     <Compile Include="Src\Modules\Assets\Roll.cs" />
+    <Compile Include="Src\Modules\Assets\Send.cs" />
     <Compile Include="Src\Modules\Assets\Starboard.cs" />
     <Compile Include="Src\Modules\BaseModule.cs" />
     <Compile Include="Src\Modules\IAsset.cs" />

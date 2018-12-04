@@ -45,12 +45,6 @@ namespace Psybot2.Src.Modules
             PsyClient.CustomLog($"[{ModName}] {text}", CustomLogEnum.Module, exc);
         }
 
-        //[Conditional("DEBUG")]
-        protected void LogDebug(string text, Exception exc = null)
-        {
-            Log(text, exc);
-        }
-
         public void Init(IPsyClient psy)
         {
             if (ModName == null)

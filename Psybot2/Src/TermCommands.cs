@@ -6,14 +6,14 @@ namespace Psybot2.Src
     {
         private string trigger;
         private string info;
-        private Action act;
+        private Action<string[]> act;
         private Func<bool> condition;
 
         public string GetTrigger => trigger;
 
         public string GetInfo => info;
 
-        public TermCommands(string trigger, string info, Action act, Func<bool> condition = null)
+        public TermCommands(string trigger, string info, Action<string[]> act, Func<bool> condition = null)
         {
             this.trigger = trigger;
             this.info = info;
@@ -21,15 +21,15 @@ namespace Psybot2.Src
             this.condition = condition;
         }
 
-        public bool Excecute(ref string _trigger)
+        public bool Excecute(string[] args)
         {
-            if (trigger.Equals(_trigger, StringComparison.InvariantCultureIgnoreCase))
+            if (trigger.Equals(args[0], StringComparison.InvariantCultureIgnoreCase))
             {
                 if (condition != null && !condition())
                 {
                     return true;
                 }
-                act();
+                act(args);
                 return true;
             }
             return false;

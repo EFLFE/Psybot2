@@ -70,12 +70,6 @@ namespace Psybot2.Src
                 }
             }
 
-            if (!Ext.IsLinux)
-            {
-                Console.SetBufferSize(160, 200);
-                Console.SetWindowSize(160, 50);
-            }
-
             Config.Init();
             Console.WriteLine();
 

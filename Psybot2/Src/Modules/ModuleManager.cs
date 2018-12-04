@@ -72,15 +72,6 @@ namespace Psybot2.Src.Modules
                 }
             }
 
-            // re-check
-            for (int i = 0; i < count; i++)
-            {
-                if (!mods[i].IsEnable)
-                {
-                    PsyClient.CustomLog("! Mod '" + mods[i].ModName + "' disabled.");
-                }
-            }
-
             helpCommands = sb.ToString();
             sb.Clear();
         }
@@ -183,42 +174,58 @@ namespace Psybot2.Src.Modules
 
         public bool EnableAll()
         {
-            bool err = false;
+            bool ok = true;
 
             for (int i = 0; i < mods.Length; i++)
             {
                 try
                 {
-                    mods[i]?.OnEnable();
+                    if (mods[i] != null)
+                    {
+                        mods[i].OnEnable();
+                        if (!mods[i].IsEnable)
+                        {
+                            ok = false;
+                            PsyClient.CustomLog($"! Mod '{mods[i].ModName}' was not enabled.");
+                        }
+                    }
                 }
                 catch (Exception exc)
                 {
-                    err = true;
+                    ok = false;
                     PsyClient.CustomLog($"Enable mod '{mods[i].ModName}' error: ", ex: exc);
                 }
             }
 
-            return err;
+            return ok;
         }
 
         public bool DisableAll()
         {
-            bool err = false;
+            bool ok = true;
 
             for (int i = 0; i < mods.Length; i++)
             {
                 try
                 {
-                    mods[i]?.OnDisable();
+                    if (mods[i] != null)
+                    {
+                        mods[i].OnDisable();
+                        if (mods[i].IsEnable)
+                        {
+                            ok = false;
+                            PsyClient.CustomLog($"! Mod '{mods[i].ModName}' was not disabled.");
+                        }
+                    }
                 }
                 catch (Exception exc)
                 {
-                    err = true;
+                    ok = false;
                     PsyClient.CustomLog($"Disable mod '{mods[i].ModName}' error: ", ex: exc);
                 }
             }
 
-            return err;
+            return ok;
         }
 
     }

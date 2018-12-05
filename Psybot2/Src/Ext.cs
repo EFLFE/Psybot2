@@ -15,13 +15,20 @@ namespace Psybot2.Src
             return (IGuildChannel)socketMessageChannel;
         }
 
-        /// <summary> Удалить сообщение через определённое время. </summary>
+        /// <summary> Удалить сообщение через определённое время (15 сек). </summary>
         public static async void DelayDeleteMessage(SocketMessage mess)
         {
             await Task.Run(() =>
             {
                 Thread.Sleep(1000 * 15);
-                mess.DeleteAsync().Wait();
+                try
+                {
+                    mess.DeleteAsync().Wait();
+                }
+                catch (Exception ex)
+                {
+                    PsyClient.CustomLog("DelayDeleteMessage fail: " + ex.Message);
+                }
             });
         }
 

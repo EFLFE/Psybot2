@@ -13,6 +13,7 @@ namespace Psybot2.Src.Modules
     {
         private readonly BaseModule[] mods;
         private readonly string helpCommands;
+        private readonly Embed helpEmbed;
         private readonly IPsyClient client;
 
         public ModuleManager(IPsyClient psy)
@@ -41,7 +42,6 @@ namespace Psybot2.Src.Modules
             mods = new BaseModule[count];
 
             var sb = new StringBuilder();
-            sb.AppendLine("Avaiable commands:");
 
             PsyClient.CustomLog("Found " + count.ToString() + " mods");
 
@@ -72,8 +72,18 @@ namespace Psybot2.Src.Modules
                 }
             }
 
+            // setup help text
             helpCommands = sb.ToString();
             sb.Clear();
+
+            var eb = new EmbedBuilder
+            {
+                Color = Color.Red,
+                Description = helpCommands,
+                Title = "Psybot² commands:",
+                Url = "https://github.com/EFLFE/Psybot2",
+            };
+            helpEmbed = eb.Build();
         }
 
         public Task ClientMessageReceivedAsync(SocketMessage mess)
@@ -98,7 +108,10 @@ namespace Psybot2.Src.Modules
                         // help ?
                         if (args.Length == 2 && args[0] == PsyClient.PREFIX && (args[1] == "help" || args[1] == "?"))
                         {
-                            mess.Channel.SendMessageAsync(helpCommands).Wait();
+                            //mess.Channel.SendMessageAsync(helpCommands).Wait();
+                            Ext.DelayDeleteMessage(mess);
+                            IDMChannel dm = mess.Author.GetOrCreateDMChannelAsync().GetAwaiter().GetResult();
+                            dm.SendMessageAsync(string.Empty, embed: helpEmbed).Wait();
                             return;
                         }
 

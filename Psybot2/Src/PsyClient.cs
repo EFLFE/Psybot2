@@ -190,7 +190,7 @@ namespace Psybot2.Src
             if (client == null)
             {
                 CustomLog("Init Discord.Net", CustomLogEnum.Psybot, null);
-                DiscordSocketConfig conf = new DiscordSocketConfig
+                var conf = new DiscordSocketConfig
                 {
                     WebSocketProvider = WS4NetProvider.Instance,
                     ConnectionTimeout = 9999,
@@ -206,11 +206,12 @@ namespace Psybot2.Src
             {
                 client.LoginAsync(TokenType.Bot, Config.GetToken(), true).Wait();
                 client.StartAsync().Wait();
+                Console.WriteLine("OK");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                exit = true;
+                Console.WriteLine("Connection fail: " + ex.Message);
+                //exit = true;
             }
         }
 

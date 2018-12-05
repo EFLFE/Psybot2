@@ -32,8 +32,6 @@ namespace Psybot2.Src
 
         private OutComEnun outCom;
 
-        private DeletedMessageMonitor dmm;
-
         private BlackList blackList;
 
         public bool IsConnected
@@ -47,7 +45,6 @@ namespace Psybot2.Src
         public PsyClient()
         {
             sbLog = new StringBuilder();
-            dmm = new DeletedMessageMonitor();
             blackList = new BlackList();
 
             commands = new TermCommands[]
@@ -202,7 +199,6 @@ namespace Psybot2.Src
                 client = new DiscordSocketClient(conf);
                 client.Log += Client_Log;
                 client.MessageReceived += Client_MessageReceived;
-                client.MessageDeleted += Client_MessageDeleted;
                 client.ReactionAdded += Client_ReactionAdded;
                 client.ReactionRemoved += Client_ReactionRemoved;
             }
@@ -257,8 +253,6 @@ namespace Psybot2.Src
         {
             if (mess.Source == MessageSource.User)
             {
-                dmm.NewMessage(mess);
-
                 if (blackList.Contains(mess.Author.Id))
                     return;
 
@@ -281,12 +275,6 @@ namespace Psybot2.Src
                     }
                 }
             }
-        }
-
-        private Task Client_MessageDeleted(Cacheable<IMessage, ulong> arg1, ISocketMessageChannel arg2)
-        {
-            dmm.MessageDeleted(arg1.Id);
-            return Task.CompletedTask;
         }
 
         private Task Client_Log(LogMessage arg)

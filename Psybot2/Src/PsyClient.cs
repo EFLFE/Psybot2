@@ -201,12 +201,12 @@ namespace Psybot2.Src
                 client.MessageReceived += Client_MessageReceived;
                 client.ReactionAdded += Client_ReactionAdded;
                 client.ReactionRemoved += Client_ReactionRemoved;
+                client.Ready += Client_Ready;
             }
             try
             {
                 client.LoginAsync(TokenType.Bot, Config.GetToken(), true).Wait();
                 client.StartAsync().Wait();
-                Console.WriteLine("OK");
             }
             catch (Exception ex)
             {
@@ -215,39 +215,9 @@ namespace Psybot2.Src
             }
         }
 
-        private Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        private Task Client_Ready()
         {
-            return moduleManager.ClientMessageReactionEventAsync(true, arg1, arg2, arg3);
-        }
-
-        private Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
-        {
-            return moduleManager.ClientMessageReactionEventAsync(false, arg1, arg2, arg3);
-        }
-
-        public static void CustomLog(string message, CustomLogEnum source = CustomLogEnum.Psybot, Exception ex = null)
-        {
-            StringBuilder obj = sbLog;
-            lock (obj)
-            {
-                string mess = new LogMessage(LogSeverity.Info, source.ToString(), message, ex).ToString(sbLog, true, true, DateTimeKind.Local, new int?(11));
-                if (ex != null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine(mess);
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-                else if (Console.ForegroundColor != (ConsoleColor)source)
-                {
-                    Console.ForegroundColor = (ConsoleColor)source;
-                    Console.WriteLine(mess);
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-                else
-                {
-                    Console.WriteLine(mess);
-                }
-            }
+            return client.SetGameAsync("psy help");
         }
 
         private async Task Client_MessageReceived(SocketMessage mess)
@@ -274,6 +244,47 @@ namespace Psybot2.Src
                     {
                         await moduleManager.ClientMessageReceivedAsync(mess);
                     }
+                }
+            }
+        }
+
+        private Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        {
+            if (blackList.Contains(arg3.User.Value.Id))
+                return Task.CompletedTask;
+
+            return moduleManager.ClientMessageReactionEventAsync(true, arg1, arg2, arg3);
+        }
+
+        private Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        {
+            if (blackList.Contains(arg3.User.Value.Id))
+                return Task.CompletedTask;
+
+            return moduleManager.ClientMessageReactionEventAsync(false, arg1, arg2, arg3);
+        }
+
+        public static void CustomLog(string message, CustomLogEnum source = CustomLogEnum.Psybot, Exception ex = null)
+        {
+            StringBuilder obj = sbLog;
+            lock (obj)
+            {
+                string mess = new LogMessage(LogSeverity.Info, source.ToString(), message, ex).ToString(sbLog, true, true, DateTimeKind.Local, new int?(11));
+                if (ex != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine(mess);
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                else if (Console.ForegroundColor != (ConsoleColor)source)
+                {
+                    Console.ForegroundColor = (ConsoleColor)source;
+                    Console.WriteLine(mess);
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                else
+                {
+                    Console.WriteLine(mess);
                 }
             }
         }

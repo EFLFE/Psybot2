@@ -49,7 +49,9 @@ namespace Psybot2.Src.Modules.Assets
         {
             if (args == null)
             {
-                await mess.Channel.SendMessageAsync(help);
+                var a = await mess.Author.GetOrCreateDMChannelAsync();
+                await a.SendMessageAsync(help);
+                Ext.DelayDeleteMessage(mess);
             }
             else
             {

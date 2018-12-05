@@ -27,7 +27,10 @@ namespace Psybot2.Src
                 }
                 catch (Exception ex)
                 {
-                    PsyClient.CustomLog("DelayDeleteMessage fail: " + ex.Message);
+                    if (ex.InnerException != null)
+                        PsyClient.CustomLog("DelayDeleteMessage fail: " + ex.InnerException.Message);
+                    else
+                        PsyClient.CustomLog("DelayDeleteMessage fail: " + ex.Message);
                 }
             });
         }

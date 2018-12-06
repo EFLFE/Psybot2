@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Psybot2.Src
 {
-    static class Config
+    internal static class Config
     {
         public static ulong AdminID { get; private set; }
 

@@ -50,7 +50,7 @@ namespace Psybot2.Src.Modules.Assets
                     "Macros: auto replace your text (A -> B).\n" +
                     "Set macros: `macros set [A] -> [B]`\n" +
                     "Delete macros: `macros delete [A]`\n" +
-                    "Show my macros (in PM): `macros show`");
+                    "Show my macros (in PM): `macros show`").ConfigureAwait(false);
         }
 
         public override async void OnGetMessage(bool triggered, SocketMessage mess, string[] args)
@@ -72,7 +72,7 @@ namespace Psybot2.Src.Modules.Assets
 
                     if (mess.Content.Length <= sub)
                     {
-                        await mess.Channel.SendMessageAsync("Missing AB arguments.");
+                        await mess.Channel.SendMessageAsync("Missing AB arguments.").ConfigureAwait(false);
                         return;
                     }
 
@@ -80,7 +80,7 @@ namespace Psybot2.Src.Modules.Assets
 
                     if (mac.Length != 2)
                     {
-                        await mess.Channel.SendMessageAsync("Missing `=>` splitter.");
+                        await mess.Channel.SendMessageAsync("Missing `=>` splitter.").ConfigureAwait(false);
                     }
                     else
                     {
@@ -89,11 +89,11 @@ namespace Psybot2.Src.Modules.Assets
 
                         if (a.Length == 0)
                         {
-                            await mess.Channel.SendMessageAsync("Missing [A] argument.");
+                            await mess.Channel.SendMessageAsync("Missing [A] argument.").ConfigureAwait(false);
                         }
                         else if (b.Length == 0)
                         {
-                            await mess.Channel.SendMessageAsync("Missing [B] argument.");
+                            await mess.Channel.SendMessageAsync("Missing [B] argument.").ConfigureAwait(false);
                         }
                         else
                         {
@@ -108,7 +108,7 @@ namespace Psybot2.Src.Modules.Assets
                                     {
                                         // заменить B
                                         authorMacros[i].SetB(b);
-                                        await mess.Channel.SendMessageAsync(":ok_hand:");
+                                        await mess.Channel.SendMessageAsync(":ok_hand:").ConfigureAwait(false);
                                         return;
                                     }
                                 }
@@ -119,25 +119,25 @@ namespace Psybot2.Src.Modules.Assets
                                 authorMacros = new List<MacroData>();
                                 authorMacros.Add(new MacroData(a, b));
                                 data.Add(mess.Author.Id, authorMacros);
-                                await mess.Channel.SendMessageAsync(":ok_hand:");
+                                await mess.Channel.SendMessageAsync(":ok_hand:").ConfigureAwait(false);
                             }
                         }
                     }
                 }
                 else if (args[0].Equals("delete", StringComparison.OrdinalIgnoreCase))
                 {
-                    await mess.Channel.SendMessageAsync("TODO");
+                    await mess.Channel.SendMessageAsync("TODO").ConfigureAwait(false);
                 }
                 else if (args[0].Equals("show", StringComparison.OrdinalIgnoreCase))
                 {
-                    IDMChannel dm = await mess.Author.GetOrCreateDMChannelAsync();
+                    IDMChannel dm = await mess.Author.GetOrCreateDMChannelAsync().ConfigureAwait(false);
                     if (dm == null)
                     {
-                        await mess.Channel.SendMessageAsync("Fail to create the DM channel.");
+                        await mess.Channel.SendMessageAsync("Fail to create the DM channel.").ConfigureAwait(false);
                     }
                     else
                     {
-                        await dm.SendMessageAsync("=)");
+                        await dm.SendMessageAsync("=)").ConfigureAwait(false);
                     }
                 }
                 else
@@ -161,7 +161,7 @@ namespace Psybot2.Src.Modules.Assets
                     {
                         if (value[i].A.Equals(a, StringComparison.Ordinal))
                         {
-                            await mess.Channel.SendMessageAsync(value[i].B);
+                            await mess.Channel.SendMessageAsync(value[i].B).ConfigureAwait(false);
                             return;
                         }
                     }

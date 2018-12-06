@@ -55,15 +55,12 @@ namespace Psybot2.Src.Modules
                     mod.Init(psy);
                     mods[i] = mod;
 
-                    if (mod.CommandName != null)
+                    if (mod.CommandName != null && !mod.Hidden)
                     {
-                        if (!mod.Hidden)
-                        {
-                            if (mod.AdminOnly)
-                                sb.Append($"`{mod.CommandName}*` ");
-                            else
-                                sb.Append($"`{mod.CommandName}` ");
-                        }
+                        if (mod.AdminOnly)
+                            sb.Append($"`{mod.CommandName}*` ");
+                        else
+                            sb.Append($"`{mod.CommandName}` ");
                     }
                 }
                 catch (Exception exc)

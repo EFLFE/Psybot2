@@ -32,7 +32,7 @@ namespace Psybot2.Src
                     else
                         PsyClient.CustomLog("DelayDeleteMessage fail: " + ex.Message);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         public static bool IsLinux

@@ -38,7 +38,7 @@ namespace Psybot2.Src
         {
             get
             {
-                return client != null && client.ConnectionState == ConnectionState.Connected;
+                return client?.ConnectionState == ConnectionState.Connected;
             }
         }
 
@@ -122,7 +122,7 @@ namespace Psybot2.Src
             }
 
             // чтение ввод данных на фоновый поток
-            ThreadPool.QueueUserWorkItem(delegate (object _)
+            ThreadPool.QueueUserWorkItem((_) =>
             {
                 for (; ; )
                 {
@@ -139,12 +139,9 @@ namespace Psybot2.Src
             blackList.SaveData();
             wasConnected = IsConnected;
             ModuleManager moduleManager = this.moduleManager;
+            moduleManager?.DisableAll();
 
-            if (moduleManager != null)
-            {
-                moduleManager.DisableAll();
-            }
-            if (client != null && client.ConnectionState == ConnectionState.Connected)
+            if (client?.ConnectionState == ConnectionState.Connected)
             {
                 client.LogoutAsync().Wait();
             }
@@ -231,7 +228,7 @@ namespace Psybot2.Src
                 {
                     if (mess.Content == "psy ping")
                     {
-                        await mess.Channel.SendMessageAsync("bot pong", false, null, null);
+                        await mess.Channel.SendMessageAsync("bot pong", false, null, null).ConfigureAwait(false);
                     }
                     else if (mess.Content.StartsWith("!psy"))
                     {
@@ -242,7 +239,7 @@ namespace Psybot2.Src
                     }
                     else
                     {
-                        await moduleManager.ClientMessageReceivedAsync(mess);
+                        await moduleManager.ClientMessageReceivedAsync(mess).ConfigureAwait(false);
                     }
                 }
             }
@@ -305,7 +302,7 @@ namespace Psybot2.Src
             {
                 if (!ExcecuteCommand(mess.Content.Remove(0, "!psy".Length + 1)))
                 {
-                    await mess.Channel.SendMessageAsync("Command not found.", false, null, null);
+                    await mess.Channel.SendMessageAsync("Command not found.", false, null, null).ConfigureAwait(false);
                 }
                 if (exit)
                 {
@@ -316,13 +313,12 @@ namespace Psybot2.Src
 
         public async void SendMessageToLogChannel(string text)
         {
-            await client.GetGuild(82151967899516928UL).GetTextChannel(Config.LogChannelID).SendMessageAsync(text);
+            await client.GetGuild(82151967899516928UL).GetTextChannel(Config.LogChannelID).SendMessageAsync(text).ConfigureAwait(false);
         }
 
         public async void SendMessage(ulong guildId, ulong channelId, string text, Embed embed = null)
         {
-            await client.GetGuild(guildId).GetTextChannel(channelId).SendMessageAsync(text, embed: embed);
+            await client.GetGuild(guildId).GetTextChannel(channelId).SendMessageAsync(text, embed: embed).ConfigureAwait(false);
         }
-
     }
 }

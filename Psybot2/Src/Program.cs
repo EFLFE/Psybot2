@@ -34,7 +34,7 @@ namespace Psybot2.Src
 
             bool resume = false;
 
-            if (args != null && args.Length > 0)
+            if (args?.Length > 0)
             {
                 if (args[0] == COM_RESUME)
                 {
@@ -131,6 +131,7 @@ namespace Psybot2.Src
             Console.ReadLine();
         }
 
+#if !DEBUG
         private static void Update(bool wasConnected)
         {
             Console.ForegroundColor = ConsoleColor.White;
@@ -149,6 +150,7 @@ namespace Psybot2.Src
             };
             Process.Start(startInfo);
         }
+#endif
 
         private static void Publish(bool resume)
         {

@@ -17,7 +17,7 @@ namespace Psybot2.Src.Modules.Assets
             {
                 var g = ulong.Parse(args[0]);
                 var c = ulong.Parse(args[1]);
-                string text = "";
+                string text = string.Empty;
                 for (int i = 2; i < args.Length; i++)
                 {
                     text += args[i] + " ";

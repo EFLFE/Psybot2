@@ -139,13 +139,13 @@ namespace Psybot2.Src.Modules.Assets
 
             if (args == null)
             {
-                await mess.Channel.SendMessageAsync("Starboard commands: `set [channel id]`, `remove`.");
+                await mess.Channel.SendMessageAsync("Starboard commands: `set [channel id]`, `remove`.").ConfigureAwait(false);
             }
             else if (args[0] == "set")
             {
                 if (args.Length == 1)
                 {
-                    await mess.Channel.SendMessageAsync("Missing channeld id.");
+                    await mess.Channel.SendMessageAsync("Missing channeld id.").ConfigureAwait(false);
                 }
                 else if (ulong.TryParse(args[1], out ulong sbChanneldId))
                 {
@@ -153,7 +153,7 @@ namespace Psybot2.Src.Modules.Assets
                     {
                         // replace
                         //guildChannelId[guildId] = sbChanneldId;
-                        await mess.Channel.SendMessageAsync("Starboard already added.");
+                        await mess.Channel.SendMessageAsync("Starboard already added.").ConfigureAwait(false);
                         return;
                     }
                     else
@@ -165,21 +165,21 @@ namespace Psybot2.Src.Modules.Assets
                     try
                     {
                         AddGuildChannelSb(guildId, sbChanneldId);
-                        await mess.Channel.TriggerTypingAsync();
-                        await mess.DeleteAsync();
-                        await mess.Channel.SendMessageAsync("Starboard added :ok_hand:");
+                        await mess.Channel.TriggerTypingAsync().ConfigureAwait(false);
+                        Ext.DelayDeleteMessage(mess);
+                        await mess.Channel.SendMessageAsync("Starboard added :ok_hand:").ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
                         guildChannelId.Remove(guildId);
-                        await mess.Channel.SendMessageAsync("Error: " + ex.Message);
+                        await mess.Channel.SendMessageAsync("Error: " + ex.Message).ConfigureAwait(false);
                         Log("Error on save data.", ex);
                         return;
                     }
                 }
                 else
                 {
-                    await mess.Channel.SendMessageAsync("Channel not found.");
+                    await mess.Channel.SendMessageAsync("Channel not found.").ConfigureAwait(false);
                     return;
                 }
             }
@@ -196,14 +196,14 @@ namespace Psybot2.Src.Modules.Assets
                     }
                     finally
                     {
-                        await mess.DeleteAsync();
-                        await mess.Channel.SendMessageAsync("Starboard removed :ok_hand:");
+                        Ext.DelayDeleteMessage(mess);
+                        await mess.Channel.SendMessageAsync("Starboard removed :ok_hand:").ConfigureAwait(false);
                     }
                 }
             }
             else
             {
-                await mess.Channel.SendMessageAsync("Unknown command.");
+                await mess.Channel.SendMessageAsync("Unknown command.").ConfigureAwait(false);
             }
         }
 
@@ -232,9 +232,9 @@ namespace Psybot2.Src.Modules.Assets
                 var messageId = message.Id;
 
                 // сообщение ещё не было добавлено в сб ии имеет достаточно звёзд
-                if (!addedMessageBuffer.Contains(messageId) &&
-                    !ContainsStarMessage(messageId) &&
-                    message.Reactions[reaction.Emote].ReactionCount >= GOAL)
+                if (!addedMessageBuffer.Contains(messageId)
+                    && !ContainsStarMessage(messageId)
+                    && message.Reactions[reaction.Emote].ReactionCount >= GOAL)
                 {
                     addedMessageBuffer.Insert(messageId);
                     AddStarMessage(messageId);
@@ -249,11 +249,11 @@ namespace Psybot2.Src.Modules.Assets
 
                         // If there is image attached
                         if (message.Attachments.Count > 0)
-                            builder.ImageUrl = message.Attachments.FirstOrDefault().Url;
+                            builder.ImageUrl = message.Attachments.FirstOrDefault()?.Url;
 
                         // If there is link thumbnail
                         if (message.Embeds.Count > 0)
-                            builder.ImageUrl = message.Embeds.FirstOrDefault().Thumbnail.Value.Url;
+                            builder.ImageUrl = message.Embeds.FirstOrDefault()?.Thumbnail.Value.Url;
 
                         Embed embed = builder.Build();
 
@@ -261,7 +261,7 @@ namespace Psybot2.Src.Modules.Assets
                             guild.GuildId,
                             sbChannelId,
                             //(message.Channel as ITextChannel).Mention + " ID: " + messageId.ToString(),
-                            (message.Channel as ITextChannel).Mention,
+                            (message.Channel as ITextChannel)?.Mention,
                             embed);
                     }
                     catch (Exception ex)

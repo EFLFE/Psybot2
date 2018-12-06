@@ -49,8 +49,8 @@ namespace Psybot2.Src.Modules.Assets
         {
             if (args == null)
             {
-                var a = await mess.Author.GetOrCreateDMChannelAsync();
-                await a.SendMessageAsync(help);
+                var a = await mess.Author.GetOrCreateDMChannelAsync().ConfigureAwait(false);
+                await a.SendMessageAsync(help).ConfigureAwait(false);
                 Ext.DelayDeleteMessage(mess);
             }
             else
@@ -60,8 +60,8 @@ namespace Psybot2.Src.Modules.Assets
                     if (mess.Author.Id == Config.AdminID)
                     {
                         Reload();
-                        await mess.DeleteAsync();
-                        await mess.Channel.SendMessageAsync(":ok_hand:");
+                        Ext.DelayDeleteMessage(mess);
+                        await mess.Channel.SendMessageAsync(":ok_hand:").ConfigureAwait(false);
                     }
                     return;
                 }
@@ -73,14 +73,14 @@ namespace Psybot2.Src.Modules.Assets
                 {
                     if (images[i].Equals(imgName, StringComparison.OrdinalIgnoreCase))
                     {
-                        await mess.Channel.TriggerTypingAsync();
-                        await mess.DeleteAsync();
-                        await mess.Channel.SendFileAsync(paths[i]);
+                        await mess.Channel.TriggerTypingAsync().ConfigureAwait(false);
+                        await mess.Channel.SendFileAsync(paths[i]).ConfigureAwait(false);
+                        Ext.DelayDeleteMessage(mess);
                         return;
                     }
                 }
 
-                await mess.Channel.SendMessageAsync("Image not found.");
+                await mess.Channel.SendMessageAsync("Image not found.").ConfigureAwait(false);
             }
 
         }

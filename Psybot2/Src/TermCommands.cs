@@ -34,6 +34,5 @@ namespace Psybot2.Src
             }
             return false;
         }
-
     }
 }

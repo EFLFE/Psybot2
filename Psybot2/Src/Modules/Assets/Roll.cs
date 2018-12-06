@@ -12,7 +12,7 @@ namespace Psybot2.Src.Modules.Assets
         public Roll() : base(nameof(Roll), "roll")
         { }
 
-        public override async void OnGetMessage(bool triggered, SocketMessage message, string[] args)
+        public override async void OnGetMessage(bool triggered, SocketMessage mess, string[] args)
         {
             string outMess = null;
 
@@ -24,7 +24,7 @@ namespace Psybot2.Src.Modules.Assets
                 }
                 else
                 {
-                    outMess = GetRoll(args[0], message.Author.Mention);
+                    outMess = GetRoll(args[0], mess.Author.Mention);
                 }
             }
             catch (Exception ex)
@@ -33,7 +33,7 @@ namespace Psybot2.Src.Modules.Assets
                 return;
             }
 
-            await message.Channel.SendMessageAsync(outMess);
+            await mess.Channel.SendMessageAsync(outMess).ConfigureAwait(false);
         }
 
         private string GetRoll(string arg, string who)
@@ -86,11 +86,11 @@ namespace Psybot2.Src.Modules.Assets
                 for (ulong i = 0; i < d1; i++)
                 {
                     int r = Ext.Rnd.Next(d2) + 1;
-                    sb.Append(r + " ");
+                    sb.Append(r.ToString() + " ");
                     sum += (ulong)r;
                 }
 
-                sb.Append($"(Total: {sum.ToString("N0")})");
+                sb.Append("(Total: ").Append(sum.ToString("N0")).Append(")");
 
                 return sb.ToString();
             }

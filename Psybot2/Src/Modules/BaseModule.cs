@@ -62,10 +62,16 @@ namespace Psybot2.Src.Modules
 
         public virtual void OnDisable() => IsEnable = false;
 
-        public virtual void OnReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        public virtual void OnReactionAdded(
+            Cacheable<IUserMessage, ulong> cachedMessage,
+            ISocketMessageChannel mesChannel,
+            SocketReaction reaction)
         { }
 
-        public virtual void OnReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        public virtual void OnReactionRemoved(
+            Cacheable<IUserMessage, ulong> cachedMessage,
+            ISocketMessageChannel mesChannel,
+            SocketReaction reaction)
         { }
 
     }

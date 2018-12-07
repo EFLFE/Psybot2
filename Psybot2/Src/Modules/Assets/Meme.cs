@@ -13,28 +13,19 @@ namespace Psybot2.Src.Modules.Assets
         private string help;
 
         public Meme() : base(nameof(Meme), "meme")
-        {
-            if (Directory.Exists(@"D:\home\img\meme\"))
-            {
-                memePath = @"D:\home\img\meme\";
-            }
-            else if (Directory.Exists(Environment.CurrentDirectory + "\\meme\\"))
-            {
-                memePath = Environment.CurrentDirectory + "\\meme\\";
-            }
-        }
+        { }
 
         public override void OnEnable()
         {
             if (Directory.Exists(@"D:\home\img\meme\"))
             {
                 memePath = @"D:\home\img\meme\";
-                OnEnable();
+                base.OnEnable();
             }
             else if (Directory.Exists(Environment.CurrentDirectory + "\\meme\\"))
             {
                 memePath = Environment.CurrentDirectory + "\\meme\\";
-                OnEnable();
+                base.OnEnable();
             }
             else
             {

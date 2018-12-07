@@ -7,30 +7,44 @@ namespace Psybot2.Src.Modules.Assets
 {
     internal sealed class Meme : BaseModule, IAsset
     {
-        private const string PATH = @"D:\home\img\meme\";
+        private string memePath;
         private string[] images;
         private string[] paths;
         private string help;
 
         public Meme() : base(nameof(Meme), "meme")
-        { }
+        {
+            if (Directory.Exists(@"D:\home\img\meme\"))
+            {
+                memePath = @"D:\home\img\meme\";
+            }
+            else if (Directory.Exists(Environment.CurrentDirectory + "\\meme\\"))
+            {
+                memePath = Environment.CurrentDirectory + "\\meme\\";
+            }
+        }
 
         public override void OnEnable()
         {
-            if (Directory.Exists(PATH))
+            if (Directory.Exists(@"D:\home\img\meme\"))
             {
-                Reload();
-                base.OnEnable();
+                memePath = @"D:\home\img\meme\";
+                OnEnable();
+            }
+            else if (Directory.Exists(Environment.CurrentDirectory + "\\meme\\"))
+            {
+                memePath = Environment.CurrentDirectory + "\\meme\\";
+                OnEnable();
             }
             else
             {
-                Log("Dir '" + PATH + "' not found.");
+                Log("Meme directory not found.");
             }
         }
 
         private void Reload()
         {
-            paths = Directory.GetFiles(PATH);
+            paths = Directory.GetFiles(memePath);
             images = new string[paths.Length];
 
             var sb = new StringBuilder();
@@ -49,7 +63,7 @@ namespace Psybot2.Src.Modules.Assets
         {
             if (args == null)
             {
-                var a = await mess.Author.GetOrCreateDMChannelAsync().ConfigureAwait(false);
+                Discord.IDMChannel a = await mess.Author.GetOrCreateDMChannelAsync().ConfigureAwait(false);
                 await a.SendMessageAsync(help).ConfigureAwait(false);
                 //Ext.DelayDeleteMessage(mess);
             }

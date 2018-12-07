@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,10 @@ namespace Psybot2.Src
 
         private DiscordSocketClient client;
 
+        private static Queue<string> queueLog;
+
+        private const int queueLogCap = 120;
+
         private bool exit;
 
         private bool safeMode;
@@ -46,6 +51,7 @@ namespace Psybot2.Src
         {
             sbLog = new StringBuilder();
             blackList = new BlackList();
+            queueLog = new Queue<string>(queueLogCap);
 
             commands = new TermCommands[]
             {
@@ -58,7 +64,38 @@ namespace Psybot2.Src
                 {
                     safeMode = !safeMode;
                     CustomLog("Safe mode is " + (safeMode ? "on" : "off"));
-                }, null),
+                }),
+                new TermCommands("log", "Send log to admin.", async (_) =>
+                {
+                    if (queueLog.Count > 0 && IsConnected)
+                    {
+                        string mess = string.Empty;
+
+                        lock (sbLog)
+                        {
+                            sbLog.Clear();
+                            sbLog.Append("```");
+                            while (queueLog.Count > 0)
+                                sbLog.AppendLine(queueLog.Dequeue());
+                            sbLog.Append("```");
+                            mess = sbLog.ToString();
+                            sbLog.Clear();
+                        }
+
+                        try
+                        {
+                            IDMChannel dm = await client.GetUser(Config.AdminID)
+                                             .GetOrCreateDMChannelAsync()
+                                             .ConfigureAwait(false);
+
+                            await dm.SendMessageAsync(mess).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            CustomLog("Fail to send log.", ex: ex);
+                        }
+                    }
+                }),
                 new TermCommands("bl", "Black list.", (args) =>
                 {
                     if (args.Length == 3 && ulong.TryParse(args[2], out ulong id))
@@ -66,12 +103,12 @@ namespace Psybot2.Src
                         if (args[1] == "add")
                         {
                             blackList.Add(id);
-                            CustomLog("Black id added");
+                            CustomLog("BlackList id added");
                         }
                         else if(args[1] == "remove")
                         {
                             blackList.Remove(id);
-                            CustomLog("Black id removed");
+                            CustomLog("BlackList id removed");
                         }
                         else
                         {
@@ -283,6 +320,10 @@ namespace Psybot2.Src
                 {
                     Console.WriteLine(mess);
                 }
+
+                if (queueLog.Count == queueLogCap)
+                    queueLog.Dequeue();
+                queueLog.Enqueue(mess);
             }
         }
 
@@ -291,7 +332,12 @@ namespace Psybot2.Src
             StringBuilder obj = sbLog;
             lock (obj)
             {
-                Console.WriteLine(arg.ToString(sbLog, true, true, DateTimeKind.Local, new int?(11)));
+                string text = arg.ToString(sbLog, true, true, DateTimeKind.Local, new int?(11));
+                Console.WriteLine(text);
+
+                if (queueLog.Count == queueLogCap)
+                    queueLog.Dequeue();
+                queueLog.Enqueue(text);
             }
             return Task.CompletedTask;
         }

@@ -12,7 +12,7 @@ namespace Psybot2.Src.Modules.Assets
     {
         private const string STAR = "⭐";
 #if DEBUG
-        private const int GOAL = 1;
+        private const int GOAL = 2;
 #else
         private const int GOAL = 4;
 #endif
@@ -255,18 +255,38 @@ namespace Psybot2.Src.Modules.Assets
                         if (message.Embeds.Count > 0)
                             builder.ImageUrl = message.Embeds.FirstOrDefault()?.Thumbnail.Value.Url;
 
+                        // Star by: users..
+                        IUser[] users = message
+                            .GetReactionUsersAsync(STAR, GOAL)
+                            .ConfigureAwait(false)
+                            .GetAwaiter()
+                            .GetResult()
+                            .ToArray();
+
+                        string userSet = " Stared by: ";
+
+                        for (int i = 0; i < users.Length; i++)
+                        {
+                            if (i > 0 && i < users.Length - 1)
+                            {
+                                userSet += ", ";
+                            }
+
+                            userSet += $"`{users[i].Username}`";
+                        }
+
                         Embed embed = builder.Build();
 
                         psybot.SendMessage(
                             guild.GuildId,
                             sbChannelId,
                             //(message.Channel as ITextChannel).Mention + " ID: " + messageId.ToString(),
-                            (message.Channel as ITextChannel)?.Mention,
+                            (message.Channel as ITextChannel)?.Mention + userSet,
                             embed);
                     }
                     catch (Exception ex)
                     {
-                        Log("[sb] error", ex);
+                        Log("Error.", ex);
                         psybot.SendMessageToLogChannel(ex.ToString());
                     }
                 }

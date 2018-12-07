@@ -51,7 +51,7 @@ namespace Psybot2.Src.Modules.Assets
             {
                 var a = await mess.Author.GetOrCreateDMChannelAsync().ConfigureAwait(false);
                 await a.SendMessageAsync(help).ConfigureAwait(false);
-                Ext.DelayDeleteMessage(mess);
+                //Ext.DelayDeleteMessage(mess);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace Psybot2.Src.Modules.Assets
                     if (mess.Author.Id == Config.AdminID)
                     {
                         Reload();
-                        Ext.DelayDeleteMessage(mess);
+                        //Ext.DelayDeleteMessage(mess);
                         await mess.Channel.SendMessageAsync(":ok_hand:").ConfigureAwait(false);
                     }
                     return;
@@ -75,7 +75,7 @@ namespace Psybot2.Src.Modules.Assets
                     {
                         await mess.Channel.TriggerTypingAsync().ConfigureAwait(false);
                         await mess.Channel.SendFileAsync(paths[i]).ConfigureAwait(false);
-                        Ext.DelayDeleteMessage(mess);
+                        //Ext.DelayDeleteMessage(mess);
                         return;
                     }
                 }

@@ -106,7 +106,7 @@ namespace Psybot2.Src.Modules
                         if (args.Length == 2 && args[0] == PsyClient.PREFIX && (args[1] == "help" || args[1] == "?"))
                         {
                             //mess.Channel.SendMessageAsync(helpCommands).Wait();
-                            Ext.DelayDeleteMessage(mess);
+                            //Ext.DelayDeleteMessage(mess);
                             IDMChannel dm = mess.Author.GetOrCreateDMChannelAsync().GetAwaiter().GetResult();
                             dm.SendMessageAsync(string.Empty, embed: helpEmbed).Wait();
                             return;

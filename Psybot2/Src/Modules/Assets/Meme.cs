@@ -17,14 +17,17 @@ namespace Psybot2.Src.Modules.Assets
 
         public override void OnEnable()
         {
-            if (Directory.Exists(@"D:\home\img\meme\"))
-            {
-                memePath = @"D:\home\img\meme\";
-                base.OnEnable();
-            }
-            else if (Directory.Exists(Environment.CurrentDirectory + "\\meme\\"))
+            // не работает на линуксе
+            if (Directory.Exists(Environment.CurrentDirectory + "\\meme\\"))
             {
                 memePath = Environment.CurrentDirectory + "\\meme\\";
+                Reload();
+                base.OnEnable();
+            }
+            else if (Directory.Exists(@"D:\home\img\meme\"))
+            {
+                memePath = @"D:\home\img\meme\";
+                Reload();
                 base.OnEnable();
             }
             else

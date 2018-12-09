@@ -269,10 +269,12 @@ namespace Psybot2.Src.Modules.Assets
                         {
                             if (i > 0 && i < users.Length - 1)
                             {
-                                userSet += ", ";
+                                userSet += $", `{users[i].Username}`";
                             }
-
-                            userSet += $"`{users[i].Username}`";
+                            else
+                            {
+                                userSet += $"`{users[i].Username}`";
+                            }
                         }
 
                         Embed embed = builder.Build();

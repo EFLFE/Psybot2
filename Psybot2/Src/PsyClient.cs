@@ -121,14 +121,28 @@ namespace Psybot2.Src
 
         public void Publish(string[] args)
         {
-            outCom = OutComEnun.Publish;
-            exit = true;
+            if (Ext.IsLinux)
+            {
+                Console.WriteLine("Not support in linux.");
+            }
+            else
+            {
+                outCom = OutComEnun.Publish;
+                exit = true;
+            }
         }
 
         public void Update(string[] args)
         {
-            outCom = OutComEnun.Update;
-            exit = true;
+            if (Ext.IsLinux)
+            {
+                Console.WriteLine("Not support in linux.");
+            }
+            else
+            {
+                outCom = OutComEnun.Update;
+                exit = true;
+            }
         }
 
         private void Exit(string[] args)

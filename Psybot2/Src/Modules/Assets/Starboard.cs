@@ -273,7 +273,7 @@ namespace Psybot2.Src.Modules.Assets
                             }
                             else
                             {
-                                userSet += $"`{users[i].Username}`";
+                                userSet += $" `{users[i].Username}`";
                             }
                         }
 

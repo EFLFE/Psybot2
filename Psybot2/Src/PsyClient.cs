@@ -14,29 +14,19 @@ namespace Psybot2.Src
     internal sealed class PsyClient : IPsyClient
     {
         public const string PREFIX = "psy";
-
         public const string PREFIX_ = "psy ";
-
         public const string ADMIN_PREFIX = "!psy";
-
-        private static StringBuilder sbLog;
-
-        private ModuleManager moduleManager;
-
-        private TermCommands[] commands;
-
-        private DiscordSocketClient client;
-
-        private static Queue<string> queueLog;
-
         private const int queueLogCap = 120;
 
+        private static StringBuilder sbLog;
+        private static Queue<string> queueLog;
+
+        private ModuleManager moduleManager;
+        private TermCommands[] commands;
+        private DiscordSocketClient client;
         private bool exit;
-
         private bool safeMode;
-
         private OutComEnun outCom;
-
         private BlackList blackList;
 
         public bool IsConnected
@@ -249,6 +239,10 @@ namespace Psybot2.Src
                 client.MessageReceived += Client_MessageReceived;
                 client.ReactionAdded += Client_ReactionAdded;
                 client.ReactionRemoved += Client_ReactionRemoved;
+                client.UserJoined += Client_UserJoined;
+                client.UserLeft += Client_UserLeft;
+                client.UserBanned += Client_UserBanned;
+                client.UserUnbanned += Client_UserUnbanned;
                 client.Ready += Client_Ready;
             }
             try
@@ -261,6 +255,78 @@ namespace Psybot2.Src
                 Console.WriteLine("Connection fail: " + ex.Message);
                 //exit = true;
             }
+        }
+
+        private Task Client_UserUnbanned(SocketUser arg1, SocketGuild arg2)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    if (arg1.IsBot)
+                    {
+                        arg2.DefaultChannel.SendMessageAsync("User " + arg1.Username + " was unbanned!").Wait();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    CustomLog("Error.", ex: ex);
+                }
+            });
+        }
+
+        private Task Client_UserBanned(SocketUser arg1, SocketGuild arg2)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    if (arg1.IsBot)
+                    {
+                        arg2.DefaultChannel.SendMessageAsync("User " + arg1.Username + " was banned!").Wait();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    CustomLog("Error.", ex: ex);
+                }
+            });
+        }
+
+        private Task Client_UserLeft(SocketGuildUser arg)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    if (arg.IsBot)
+                    {
+                        arg.Guild.DefaultChannel.SendMessageAsync("Bye, " + arg.Username + " !").Wait();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    CustomLog("Error.", ex: ex);
+                }
+            });
+        }
+
+        private Task Client_UserJoined(SocketGuildUser arg)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    if (arg.IsBot)
+                    {
+                        arg.Guild.DefaultChannel.SendMessageAsync("Welcome, " + arg.Username + " !").Wait();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    CustomLog("Error.", ex: ex);
+                }
+            });
         }
 
         private Task Client_Ready()

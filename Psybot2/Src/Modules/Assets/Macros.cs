@@ -43,13 +43,13 @@ namespace Psybot2.Src.Modules.Assets
 
         private async void Help(SocketMessage mess)
         {
-            var dm = await mess.Author.GetOrCreateDMChannelAsync().ConfigureAwait(false);
+            var dm = await mess.Author.GetOrCreateDMChannelAsync();
 
             await dm.SendMessageAsync(
                     "Macros: auto continued your text (from -> to)(ignore case).\n" +
                     $"Set macros: `{PsyClient.PREFIX} {CommandName} set/replace [text_from] -> [text_to]`\n" +
                     $"Delete macros: `{PsyClient.PREFIX} {CommandName} delete [text_from]`\n" +
-                    $"Show my macros (in PM): `{PsyClient.PREFIX} {CommandName} show`").ConfigureAwait(false);
+                    $"Show my macros (in PM): `{PsyClient.PREFIX} {CommandName} show`");
         }
 
         public override void OnGetMessage(bool triggered, SocketMessage mess, string[] args)

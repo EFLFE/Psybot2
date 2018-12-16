@@ -139,13 +139,13 @@ namespace Psybot2.Src.Modules.Assets
 
             if (args == null)
             {
-                await mess.Channel.SendMessageAsync("Starboard commands: `set [channel id]`, `remove`.").ConfigureAwait(false);
+                await mess.Channel.SendMessageAsync("Starboard commands: `set [channel id]`, `remove`.");
             }
             else if (args[0] == "set")
             {
                 if (args.Length == 1)
                 {
-                    await mess.Channel.SendMessageAsync("Missing channeld id.").ConfigureAwait(false);
+                    await mess.Channel.SendMessageAsync("Missing channeld id.");
                 }
                 else if (ulong.TryParse(args[1], out ulong sbChanneldId))
                 {
@@ -153,7 +153,7 @@ namespace Psybot2.Src.Modules.Assets
                     {
                         // replace
                         //guildChannelId[guildId] = sbChanneldId;
-                        await mess.Channel.SendMessageAsync("Starboard already added.").ConfigureAwait(false);
+                        await mess.Channel.SendMessageAsync("Starboard already added.");
                         return;
                     }
                     else
@@ -165,21 +165,21 @@ namespace Psybot2.Src.Modules.Assets
                     try
                     {
                         AddGuildChannelSb(guildId, sbChanneldId);
-                        await mess.Channel.TriggerTypingAsync().ConfigureAwait(false);
+                        await mess.Channel.TriggerTypingAsync();
                         Ext.DelayDeleteMessage(mess);
-                        await mess.Channel.SendMessageAsync("Starboard added :ok_hand:").ConfigureAwait(false);
+                        await mess.Channel.SendMessageAsync("Starboard added :ok_hand:");
                     }
                     catch (Exception ex)
                     {
                         guildChannelId.Remove(guildId);
-                        await mess.Channel.SendMessageAsync("Error: " + ex.Message).ConfigureAwait(false);
+                        await mess.Channel.SendMessageAsync("Error: " + ex.Message);
                         Log("Error on save data.", ex);
                         return;
                     }
                 }
                 else
                 {
-                    await mess.Channel.SendMessageAsync("Channel not found.").ConfigureAwait(false);
+                    await mess.Channel.SendMessageAsync("Channel not found.");
                     return;
                 }
             }
@@ -197,13 +197,13 @@ namespace Psybot2.Src.Modules.Assets
                     finally
                     {
                         Ext.DelayDeleteMessage(mess);
-                        await mess.Channel.SendMessageAsync("Starboard removed :ok_hand:").ConfigureAwait(false);
+                        await mess.Channel.SendMessageAsync("Starboard removed :ok_hand:");
                     }
                 }
             }
             else
             {
-                await mess.Channel.SendMessageAsync("Unknown command.").ConfigureAwait(false);
+                await mess.Channel.SendMessageAsync("Unknown command.");
             }
         }
 
@@ -258,7 +258,7 @@ namespace Psybot2.Src.Modules.Assets
                         // Star by: users..
                         IUser[] users = message
                             .GetReactionUsersAsync(STAR, GOAL)
-                            .ConfigureAwait(false)
+                            
                             .GetAwaiter()
                             .GetResult()
                             .ToArray();

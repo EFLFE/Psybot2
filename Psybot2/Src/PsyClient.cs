@@ -76,9 +76,9 @@ namespace Psybot2.Src
                         {
                             IDMChannel dm = await client.GetUser(Config.AdminID)
                                              .GetOrCreateDMChannelAsync()
-                                             .ConfigureAwait(false);
+                                             ;
 
-                            await dm.SendMessageAsync(mess).ConfigureAwait(false);
+                            await dm.SendMessageAsync(mess);
                         }
                         catch (Exception ex)
                         {
@@ -345,7 +345,7 @@ namespace Psybot2.Src
                 {
                     if (mess.Content == "psy ping")
                     {
-                        await mess.Channel.SendMessageAsync("bot pong", false, null, null).ConfigureAwait(false);
+                        await mess.Channel.SendMessageAsync("bot pong", false, null, null);
                     }
                     else if (mess.Content.StartsWith("!psy"))
                     {
@@ -356,7 +356,7 @@ namespace Psybot2.Src
                     }
                     else
                     {
-                        await moduleManager.ClientMessageReceivedAsync(mess).ConfigureAwait(false);
+                        await moduleManager.ClientMessageReceivedAsync(mess);
                     }
                 }
             }
@@ -428,7 +428,7 @@ namespace Psybot2.Src
             {
                 if (!ExcecuteCommand(mess.Content.Remove(0, "!psy".Length + 1)))
                 {
-                    await mess.Channel.SendMessageAsync("Command not found.", false, null, null).ConfigureAwait(false);
+                    await mess.Channel.SendMessageAsync("Command not found.", false, null, null);
                 }
                 if (exit)
                 {
@@ -439,12 +439,12 @@ namespace Psybot2.Src
 
         public async void SendMessageToLogChannel(string text)
         {
-            await client.GetGuild(82151967899516928UL).GetTextChannel(Config.LogChannelID).SendMessageAsync(text).ConfigureAwait(false);
+            await client.GetGuild(82151967899516928UL).GetTextChannel(Config.LogChannelID).SendMessageAsync(text);
         }
 
         public async void SendMessage(ulong guildId, ulong channelId, string text, Embed embed = null)
         {
-            await client.GetGuild(guildId).GetTextChannel(channelId).SendMessageAsync(text, embed: embed).ConfigureAwait(false);
+            await client.GetGuild(guildId).GetTextChannel(channelId).SendMessageAsync(text, embed: embed);
         }
     }
 }

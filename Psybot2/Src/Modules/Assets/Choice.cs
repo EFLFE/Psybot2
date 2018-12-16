@@ -12,11 +12,11 @@ namespace Psybot2.Src.Modules.Assets
         {
             if (args == null || args.Length < 2)
             {
-                await mess.Channel.SendMessageAsync(mess.Author.Mention + " enter also some text by a space.").ConfigureAwait(false);
+                await mess.Channel.SendMessageAsync(mess.Author.Mention + " enter also some text by a space.");
             }
             else
             {
-                await mess.Channel.SendMessageAsync(mess.Author.Mention + " " + args[Ext.Rnd.Next(args.Length)]).ConfigureAwait(false);
+                await mess.Channel.SendMessageAsync(mess.Author.Mention + " " + args[Ext.Rnd.Next(args.Length)]);
             }
         }
     }

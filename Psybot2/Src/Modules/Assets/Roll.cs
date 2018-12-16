@@ -33,7 +33,7 @@ namespace Psybot2.Src.Modules.Assets
                 return;
             }
 
-            await mess.Channel.SendMessageAsync(outMess).ConfigureAwait(false);
+            await mess.Channel.SendMessageAsync(outMess);
         }
 
         private string GetRoll(string arg, string who)

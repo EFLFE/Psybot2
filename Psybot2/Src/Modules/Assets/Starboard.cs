@@ -14,7 +14,7 @@ namespace Psybot2.Src.Modules.Assets
 #if DEBUG
         private const int GOAL = 2;
 #else
-        private const int GOAL = 4;
+        private const int GOAL = 3;
 #endif
 
         private const string STARED_MESSAGES = "sb1.bin";
@@ -38,7 +38,7 @@ namespace Psybot2.Src.Modules.Assets
             staredMessageStream = new BinaryStream(STARED_MESSAGES, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             starboardChannelsStream = new BinaryStream(STARBOARD_CHANNELS, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
 
-            Log("read " + STARBOARD_CHANNELS);
+            //Log("read " + STARBOARD_CHANNELS);
             if (starboardChannelsStream.FStream.Length != 0)
             {
                 int sbCount = starboardChannelsStream.Reader.ReadInt32();
@@ -258,7 +258,7 @@ namespace Psybot2.Src.Modules.Assets
                         // Star by: users..
                         IUser[] users = message
                             .GetReactionUsersAsync(STAR, GOAL)
-                            
+
                             .GetAwaiter()
                             .GetResult()
                             .ToArray();
@@ -267,14 +267,7 @@ namespace Psybot2.Src.Modules.Assets
 
                         for (int i = 0; i < users.Length; i++)
                         {
-                            if (i > 0 && i < users.Length - 1)
-                            {
-                                userSet += $", `{users[i].Username}`";
-                            }
-                            else
-                            {
-                                userSet += $" `{users[i].Username}`";
-                            }
+                            userSet += $", `{users[i].Username}`";
                         }
 
                         Embed embed = builder.Build();

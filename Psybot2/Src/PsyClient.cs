@@ -16,7 +16,7 @@ namespace Psybot2.Src
         public const string PREFIX = "psy";
         public const string PREFIX_ = "psy ";
         public const string ADMIN_PREFIX = "!psy";
-        private const int queueLogCap = 120;
+        private const int queueLogCap = 30;
 
         private static StringBuilder sbLog;
         private static Queue<string> queueLog;
@@ -70,14 +70,14 @@ namespace Psybot2.Src
                             sbLog.Append("```");
                             mess = sbLog.ToString();
                             sbLog.Clear();
+
+                            if (mess.Length > 2000)
+                                mess = mess.Remove(2000);
                         }
 
                         try
                         {
-                            IDMChannel dm = await client.GetUser(Config.AdminID)
-                                             .GetOrCreateDMChannelAsync()
-                                             ;
-
+                            IDMChannel dm = await client.GetUser(Config.AdminID).GetOrCreateDMChannelAsync();
                             await dm.SendMessageAsync(mess);
                         }
                         catch (Exception ex)
@@ -347,7 +347,7 @@ namespace Psybot2.Src
                     {
                         await mess.Channel.SendMessageAsync("bot pong", false, null, null);
                     }
-                    else if (mess.Content.StartsWith("!psy"))
+                    else if (mess.Content.StartsWith(ADMIN_PREFIX))
                     {
                         if (mess.Author.Id == Config.AdminID)
                         {
@@ -424,9 +424,9 @@ namespace Psybot2.Src
 
         private async void ParseAdminCom(SocketMessage mess)
         {
-            if (mess.Content.Length > "!psy".Length + 2)
+            if (mess.Content.Length > ADMIN_PREFIX.Length + 2)
             {
-                if (!ExcecuteCommand(mess.Content.Remove(0, "!psy".Length + 1)))
+                if (!ExcecuteCommand(mess.Content.Remove(0, ADMIN_PREFIX.Length + 1)))
                 {
                     await mess.Channel.SendMessageAsync("Command not found.", false, null, null);
                 }

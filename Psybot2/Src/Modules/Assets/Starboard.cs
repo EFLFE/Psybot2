@@ -17,7 +17,7 @@ namespace Psybot2.Src.Modules.Assets
         private const int GOAL = 3;
 #endif
 
-        private const string STARED_MESSAGES = "sb1.bin";
+        private const string STARED_MESSAGES = "sb1.bin"; 
         private const string STARBOARD_CHANNELS = "sb2.bin";
 
         // guild Id -> channel 'starboard' id
@@ -267,7 +267,10 @@ namespace Psybot2.Src.Modules.Assets
 
                         for (int i = 0; i < users.Length; i++)
                         {
-                            userSet += $", `{users[i].Username}`";
+                            if (i == 0)
+                                userSet += $"`{users[i].Username}`";
+                            else
+                                userSet += $", `{users[i].Username}`";
                         }
 
                         Embed embed = builder.Build();

@@ -239,8 +239,8 @@ namespace Psybot2.Src
                 client.MessageReceived += Client_MessageReceived;
                 client.ReactionAdded += Client_ReactionAdded;
                 client.ReactionRemoved += Client_ReactionRemoved;
-                client.UserJoined += Client_UserJoined;
-                client.UserLeft += Client_UserLeft;
+                //client.UserJoined += Client_UserJoined;
+                //client.UserLeft += Client_UserLeft;
                 client.UserBanned += Client_UserBanned;
                 client.UserUnbanned += Client_UserUnbanned;
                 client.Ready += Client_Ready;
